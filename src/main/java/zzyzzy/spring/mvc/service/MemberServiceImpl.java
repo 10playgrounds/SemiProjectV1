@@ -22,4 +22,10 @@ public class MemberServiceImpl implements MemberService {
 		return isInsert;
 	}
 
+	@Override
+	public MemberVO readOneMember() {
+		
+		return mdao.selectOneMember();
+	}
+
 }
