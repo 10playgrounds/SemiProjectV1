@@ -1,5 +1,7 @@
 package zzyzzy.spring.mvc.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import javax.sql.DataSource;
@@ -19,13 +21,13 @@ import zzyzzy.spring.mvc.vo.MemberVO;
 @Repository("mdao")
 public class MemberDAOImpl implements MemberDAO {
 
-	//@Autowired
+	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	private SimpleJdbcInsert simpleJdbcInsert;
 	private NamedParameterJdbcTemplate jdbcNameTemplate;
 	
-	private RowMapper<MemberVO> memberMapper = 
-		BeanPropertyRowMapper.newInstance(MemberVO.class);
+	//private RowMapper<MemberVO> memberMapper = 
+	//	BeanPropertyRowMapper.newInstance(MemberVO.class);
 			
 	public MemberDAOImpl(DataSource dataSource) {
 		simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
@@ -50,8 +52,29 @@ public class MemberDAOImpl implements MemberDAO {
 			" select userid,name,email,regdate from member "
 			+ " where mno = 1 ";
 		
-		return jdbcNameTemplate.queryForObject(
-			sql, Collections.emptyMap(), memberMapper);
+		RowMapper<MemberVO> memberMapper =
+				new MemberRowMapper();
+		
+		return jdbcTemplate.queryForObject(
+								sql, null, memberMapper);
+	}
+	
+	// 콜백 메서드 정의 : mapRow
+	private class MemberRowMapper 
+					implements RowMapper<MemberVO> {
+
+		@Override
+		public MemberVO mapRow(ResultSet rs, int num) throws SQLException {
+			MemberVO m = new MemberVO();
+			
+			m.setUserid(rs.getString("userid"));
+			m.setName(rs.getString("name"));
+			m.setEmail(rs.getString("email"));
+			m.setRegdate(rs.getString("regdate"));
+			
+			return m;
+		}
+		
 	}
 
 }
