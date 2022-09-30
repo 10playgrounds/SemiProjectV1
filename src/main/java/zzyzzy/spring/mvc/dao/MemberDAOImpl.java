@@ -52,19 +52,7 @@ public class MemberDAOImpl implements MemberDAO {
 			" select userid,name,email,regdate from member "
 			+ " where mno = 1 ";
 		
-		RowMapper<MemberVO> memberMapper =
-				new MemberRowMapper();
-		
-		return jdbcTemplate.queryForObject(
-								sql, null, memberMapper);
-	}
-	
-	// 콜백 메서드 정의 : mapRow
-	private class MemberRowMapper 
-					implements RowMapper<MemberVO> {
-
-		@Override
-		public MemberVO mapRow(ResultSet rs, int num) throws SQLException {
+		RowMapper<MemberVO> memberMapper = (rs, num) -> {
 			MemberVO m = new MemberVO();
 			
 			m.setUserid(rs.getString("userid"));
@@ -73,8 +61,11 @@ public class MemberDAOImpl implements MemberDAO {
 			m.setRegdate(rs.getString("regdate"));
 			
 			return m;
-		}
+		};
 		
+		return jdbcTemplate.queryForObject(
+								sql, null, memberMapper);
 	}
+	
 
 }
