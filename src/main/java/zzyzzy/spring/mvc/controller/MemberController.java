@@ -67,12 +67,21 @@ public class MemberController {
 		return "redirect:/";
 	}
 	
+	// 로그인 안했다면 -> redirect:/login 
+	// 로그인 했다면 -> join/myinfo
 	@GetMapping("/myinfo")
-	public String myinfo(Model m) {
+	public String myinfo(Model m, HttpSession sess) {
+		String returnPage = "join/myinfo";
 		
-		m.addAttribute("mbr", msrv.readOneMember());
+		if (sess.getAttribute("m") != null) {
+			MemberVO mvo = (MemberVO) sess.getAttribute("m");
+			m.addAttribute("mbr", 
+					msrv.readOneMember(mvo.getUserid()));
+		} else {
+			returnPage = "redirect:/login";
+		}
 		
-		return "join/myinfo";
+		return returnPage;
 	}
 	
 }
