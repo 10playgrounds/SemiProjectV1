@@ -1,5 +1,7 @@
 package zzyzzy.spring.mvc.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +47,24 @@ public class MemberController {
 		return "join/login";
 	}
 	
-	@PostMapping("/login")
-	public String loginok() {
+	@PostMapping("/login") // 로그인 처리
+	public String loginok(MemberVO mvo, HttpSession sess) {
+		String returnPage = "join/lgnfail";		
+
+		if (msrv.checkLogin(mvo)) {
+			sess.setAttribute("m", mvo);  // 회원정보를 세션에 저장
+			returnPage = "redirect:/myinfo";
+		}
 		
-		return "redirect:/myinfo";
+		return returnPage;
+	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession sess) {
+		
+		sess.invalidate();   // 모든 세션 제거
+		
+		return "redirect:/";
 	}
 	
 	@GetMapping("/myinfo")
