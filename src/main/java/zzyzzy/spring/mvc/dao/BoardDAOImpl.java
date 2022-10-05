@@ -59,15 +59,15 @@ public class BoardDAOImpl implements BoardDAO {
 		StringBuilder sql = new StringBuilder(); 
 		sql.append(" select bno,title,userid,regdate,views from board ");
 		
-		if (fkey.equals("title")) sql.append(" where title = :fval ");
-		else if (fkey.equals("userid")) sql.append(" where userid = :fval ");
-		else if (fkey.equals("contents")) sql.append(" where contents = :fval ");
+		if (fkey.equals("title")) sql.append(" where title like :fval ");
+		else if (fkey.equals("userid")) sql.append(" where userid like :fval ");
+		else if (fkey.equals("contents")) sql.append(" where contents like :fval ");
 		
 		sql.append(" order by bno desc limit :snum, 25");
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("snum", snum);
-		params.put("fval", fval);
+		params.put("fval", "%"+ fval +"%");
 		
 		return jdbcNamedTemplate.query(sql.toString(), 
 							params, boardMapper);
@@ -78,6 +78,7 @@ public class BoardDAOImpl implements BoardDAO {
 		// 본문글에 대한 조회수 증가시키기
 		String sql = " update board set views = views + 1 "
 				   + " where bno = ? ";
+		
 		Object[] param = { bno };
 		jdbcTemplate.update(sql, param);
 		
@@ -89,11 +90,18 @@ public class BoardDAOImpl implements BoardDAO {
 
 	@Override
 	public int selectCountBoard(String fkey, String fval) {
-		String sql = 
-			"select ceil(count(bno)/25) pages from board";
+		StringBuilder sql = new StringBuilder(); 
+		sql.append(" select ceil(count(bno)/25) pages from board ");
 		
-		return jdbcTemplate
-				.queryForObject(sql, null, Integer.class);
+		if (fkey.equals("title")) sql.append(" where title like :fval");
+		else if (fkey.equals("userid")) sql.append(" where userid like :fval");
+		else if (fkey.equals("contents")) sql.append(" where contents like :fval");
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("fval", "%" + fval + "%");
+		
+		return jdbcNamedTemplate
+				.queryForObject(sql.toString(), param, Integer.class);
 	}
 
 }
