@@ -16,6 +16,8 @@ public interface BoardService {
 
 	boolean removeBoard(String bno);
 
+	boolean modifyBoard(BoardVO bvo);
+
 }
 
 
