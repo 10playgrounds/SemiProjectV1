@@ -4,16 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.print.attribute.HashAttributeSet;
 import javax.sql.DataSource;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -27,6 +25,9 @@ public class MemberDAOImpl implements MemberDAO {
 	private JdbcTemplate jdbcTemplate;
 	private SimpleJdbcInsert simpleJdbcInsert;
 	private NamedParameterJdbcTemplate jdbcNameTemplate;
+	
+	@Autowired
+	private SqlSession sqlSession;
 	
 	//private RowMapper<MemberVO> memberMapper = 
 	//	BeanPropertyRowMapper.newInstance(MemberVO.class);
@@ -44,10 +45,7 @@ public class MemberDAOImpl implements MemberDAO {
 	
 	@Override
 	public int insertMember(MemberVO mvo) {
-		SqlParameterSource params = 
-				new BeanPropertySqlParameterSource(mvo);
-		
-		return simpleJdbcInsert.execute(params);
+		return sqlSession.insert("member.insertMember", mvo);
 	}
 
 	@Override
