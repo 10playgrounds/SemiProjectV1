@@ -22,7 +22,7 @@
 		
 		select bno, title, userid, regdate, views from board
 		<if test="fkey != ''"> where ${fkey} like #{fval} </if>
-		order by bno desc limit #{snum}, 25		
+		order by bno desc limit #{snum}, 25
 	</select>
 	
 	<select id="selectCountBoard" statementType="PREPARED"
